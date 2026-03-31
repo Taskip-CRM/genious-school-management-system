@@ -84,22 +84,24 @@ Track the current sprint and completed modules here. Update after each sprint.
 
 | # | Module | Status | Sprint |
 |---|---|---|---|
-| 01 | Authentication & Access Control | Pending | Sprint 1–2 |
-| 02 | School Setup & Configuration | Pending | Sprint 3 |
-| 03 | Student Management | Pending | Sprint 4 |
+| 01 | Authentication & Access Control | ✅ Done (Sprint 1) | Sprint 1–2 |
+| 01 | Auth & Tenancy — Multi-school, Super Admin scaffold | ✅ Done (Sprint 2) | Sprint 2 |
+| 01 | Schools CRUD — Super Admin Schools Management | ✅ Done (Sprint 2B) | Sprint 2B |
+| 02 | School Setup & Configuration | ✅ Done (Sprint 3) | Sprint 3 |
+| 03 | Student Management | ✅ Done (Sprint 4) | Sprint 4 |
 | 16 | Admission Inquiry & Visitor Management | Pending | Sprint 4B |
-| 04 | Staff & HR Management (Basic) | Pending | Sprint 5 |
-| 05 | Attendance Management | Pending | Sprint 6 |
-| 06 | Timetable & Scheduling | Pending | Sprint 7 |
-| 07 | Examination & Results | Pending | Sprint 8 |
-| 08 | Fee Management | Pending | Sprint 9–10 |
-| 04 | Staff & HR Management (Advanced) | Pending | Sprint 11 |
-| 09 | Library Management | Pending | Sprint 12 |
-| 18 | Inventory & Asset Management | Pending | Sprint 12B |
-| 10 | Transport Management | Pending | Sprint 13 |
-| 17 | Hostel Management | Pending | Sprint 13B |
-| 11 | Homework & Lesson Planning | Pending | Sprint 14 |
-| 12 | Communication | Pending | Sprint 15 |
+| 04 | Staff & HR Management (Basic) | ✅ Done (Sprint 5) | Sprint 5 |
+| 05 | Attendance Management | ✅ Done (Sprint 6) | Sprint 6 |
+| 06 | Timetable & Scheduling | ✅ Done (Sprint 7) | Sprint 7 |
+| 07 | Examination & Results | ✅ Done (Sprint 8) | Sprint 8 |
+| 08 | Fee Management | ✅ Done (Sprint 9) | Sprint 9–10 |
+| 04 | Staff & HR Management (Advanced) | ✅ Done (Sprint 11) | Sprint 11 |
+| 09 | Library Management | ✅ Done (Sprint 12) | Sprint 12 |
+| 18 | Inventory & Asset Management | ✅ Done (Sprint 12B) | Sprint 12B |
+| 10 | Transport Management | ✅ Done (Sprint 13) | Sprint 13 |
+| 17 | Hostel Management | ✅ Done (Sprint 13B) | Sprint 13B |
+| 11 | Homework & Lesson Planning | ✅ Done (Sprint 14) | Sprint 14 |
+| 12 | Communication | ✅ Done (Sprint 15) | Sprint 15 |
 | 13 | Reports & Analytics | Pending | Sprint 16 |
 | 14 | System Administration | Pending | Sprint 17 |
 | 15 | Mobile PWA & API | Pending | Sprint 17 |
