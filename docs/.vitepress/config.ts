@@ -13,6 +13,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
+      { text: 'Installation', link: '/installation' },
       { text: 'Getting Started', link: '/getting-started' },
       {
         text: 'Role Guides',
@@ -31,6 +32,7 @@ export default defineConfig({
         text: '🚀 Getting Started',
         items: [
           { text: 'Welcome', link: '/' },
+          { text: 'VPS Installation', link: '/installation' },
           { text: 'Logging In', link: '/getting-started' },
           { text: 'Navigating the System', link: '/navigation' },
         ],
