@@ -11,7 +11,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Download, Filter, TrendingUp, AlertCircle, DollarSign } from 'lucide-react';
 
 interface Payment {
-    id: number; total_amount: number; amount_paid: number; status: string; paid_at?: string;
+    id: number; amount_due: number; amount_paid: number; status: string; payment_date?: string;
     student?: { first_name: string; last_name: string; admission_no: string };
 }
 interface Paginated { data: Payment[]; total: number; last_page: number; links: { url: string | null; label: string; active: boolean }[]; }
@@ -125,7 +125,7 @@ export default function FinanceReport({ collected, outstanding, payroll, dailyCh
                                     <XAxis dataKey="day" tick={{ fontSize: 11 }} />
                                     <YAxis tick={{ fontSize: 11 }} />
                                     <Tooltip formatter={(v: number) => [`$${fmt(v)}`, 'Collected']} />
-                                    <Area type="monotone" dataKey="amount" stroke="#6366f1" fill="url(#colorFee)" strokeWidth={2} />
+                                    <Area type="monotone" dataKey="amount" stroke="#6366f1" fill="url(#colorFee)" strokeWidth={2} isAnimationActive={false} />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </CardContent>
@@ -156,11 +156,11 @@ export default function FinanceReport({ collected, outstanding, payroll, dailyCh
                                     <TableRow key={p.id}>
                                         <TableCell>{p.student ? `${p.student.first_name} ${p.student.last_name}` : '—'}</TableCell>
                                         <TableCell>{p.student?.admission_no ?? '—'}</TableCell>
-                                        <TableCell>${fmt(p.total_amount)}</TableCell>
+                                        <TableCell>${fmt(p.amount_due)}</TableCell>
                                         <TableCell className="text-green-600">${fmt(p.amount_paid)}</TableCell>
-                                        <TableCell className="text-orange-500">${fmt(p.total_amount - p.amount_paid)}</TableCell>
+                                        <TableCell className="text-orange-500">${fmt(p.amount_due - p.amount_paid)}</TableCell>
                                         <TableCell><Badge variant={statusColor[p.status] ?? 'secondary'}>{p.status}</Badge></TableCell>
-                                        <TableCell>{p.paid_at ? new Date(p.paid_at).toLocaleDateString() : '—'}</TableCell>
+                                        <TableCell>{p.payment_date ? new Date(p.payment_date).toLocaleDateString() : '—'}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

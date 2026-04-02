@@ -49,6 +49,7 @@ export interface PageProps {
         success?: string;
         error?: string;
     };
+    faviconUrl: string | null;
     errors: Record<string, string>;
 }
 

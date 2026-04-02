@@ -12,9 +12,9 @@ import { Download, Filter } from 'lucide-react';
 
 interface SchoolClass { id: number; name: string; }
 interface Record {
-    id: number; date: string; status: string;
-    student?: { first_name: string; last_name: string; admission_no: string };
-    school_class?: SchoolClass;
+    id: number; date: string; status: string; remarks?: string;
+    name: string; admission_no: string | null;
+    class: string | null; attendable_type: string;
 }
 interface Paginated { data: Record[]; total: number; last_page: number; links: { url: string | null; label: string; active: boolean }[]; }
 interface Props {
@@ -135,9 +135,9 @@ export default function AttendanceReport({ records, summary, classes, filters }:
                                 )}
                                 {records.data.map(r => (
                                     <TableRow key={r.id}>
-                                        <TableCell>{r.student ? `${r.student.first_name} ${r.student.last_name}` : '—'}</TableCell>
-                                        <TableCell>{r.student?.admission_no ?? '—'}</TableCell>
-                                        <TableCell>{r.school_class?.name ?? '—'}</TableCell>
+                                        <TableCell>{r.name}</TableCell>
+                                        <TableCell>{r.admission_no ?? '—'}</TableCell>
+                                        <TableCell>{r.class ?? '—'}</TableCell>
                                         <TableCell>{new Date(r.date).toLocaleDateString()}</TableCell>
                                         <TableCell><Badge variant={statusColor[r.status] ?? 'secondary'}>{r.status}</Badge></TableCell>
                                     </TableRow>

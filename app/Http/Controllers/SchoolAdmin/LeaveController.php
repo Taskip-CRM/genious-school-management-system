@@ -125,7 +125,7 @@ class LeaveController extends Controller
 
     public function approve(Request $request, LeaveRequest $leaveRequest)
     {
-        $this->authorize('update', $leaveRequest);
+        abort_if($leaveRequest->school_id !== $this->getSchoolId(), 403);
 
         $data = $request->validate([
             'action'        => 'required|in:approved,rejected',

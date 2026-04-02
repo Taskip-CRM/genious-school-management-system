@@ -27,7 +27,22 @@ use App\Http\Controllers\SchoolAdmin\ShiftController;
 use App\Http\Controllers\SchoolAdmin\StaffController;
 use App\Http\Controllers\SchoolAdmin\StudentController;
 use App\Http\Controllers\SchoolAdmin\SubjectController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SchoolAdmin\SchoolUserController;
+use App\Http\Controllers\SchoolAdmin\SettingsController as SchoolSettingsController;
+use App\Http\Controllers\SuperAdmin\SettingsController as SuperAdminSettingsController;
+use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
+use App\Http\Controllers\SchoolAdmin\AdmissionInquiryController;
+use App\Http\Controllers\SchoolAdmin\VisitorLogController;
+use App\Http\Controllers\PublicAdmissionController;
+use App\Http\Controllers\StudentPortalController;
+use App\Http\Controllers\ParentPortalController;
+use App\Http\Controllers\SuperAdmin\CouponController;
+use App\Http\Controllers\SuperAdmin\ModuleManagerController;
+use App\Http\Controllers\SuperAdmin\PackageController;
 use App\Http\Controllers\SuperAdmin\SchoolController;
+use App\Http\Controllers\SuperAdmin\SubscriptionController;
+use App\Http\Controllers\SuperAdmin\UserManagementController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -50,15 +65,23 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
+    // Profile
+    Route::get('/profile',                   [ProfileController::class, 'show'])->name('profile');
+    Route::put('/profile',                   [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/password/change',           [ProfileController::class, 'changePasswordPage'])->name('password.change');
+    Route::put('/profile/password',          [ProfileController::class, 'updatePassword'])->name('profile.password');
+
     Route::get('/dashboard', function () {
         $user = auth()->user();
 
         // Redirect to role-specific dashboard
         return match (true) {
-            $user->hasRole('super-admin')                         => redirect()->route('super-admin.schools.index'),
-            $user->hasRole('school-admin') || $user->hasRole('principal') => redirect()->route('school.students.index'),
-            $user->hasRole('teacher')                             => redirect()->route('school.students.index'),
-            default                                               => Inertia::render('Dashboard'),
+            $user->hasRole('super-admin')                                   => redirect()->route('super-admin.dashboard'),
+            $user->hasRole('school-admin') || $user->hasRole('principal')   => redirect()->route('school.reports.dashboard'),
+            $user->hasRole('teacher')                                        => redirect()->route('school.reports.dashboard'),
+            $user->hasRole('student')                                        => redirect()->route('student.dashboard'),
+            $user->hasRole('parent')                                         => redirect()->route('parent.dashboard'),
+            default                                                          => redirect()->route('school.reports.dashboard'),
         };
     })->name('dashboard');
 
@@ -263,6 +286,13 @@ Route::middleware('auth')->group(function () {
             Route::get('reports/finance/export-pdf',            [ReportController::class, 'exportFinancePdf'])->name('reports.finance.pdf');
             Route::get('reports/audit-log',                     [ReportController::class, 'auditLog'])->name('reports.audit-log');
 
+            // General / Branding / Academic / Notification Settings
+            Route::get('settings',                              [SchoolSettingsController::class, 'index'])->name('settings.index');
+            Route::post('settings/general',                     [SchoolSettingsController::class, 'saveGeneral'])->name('settings.general');
+            Route::post('settings/branding',                    [SchoolSettingsController::class, 'saveBranding'])->name('settings.branding');
+            Route::post('settings/academic',                    [SchoolSettingsController::class, 'saveAcademic'])->name('settings.academic');
+            Route::post('settings/notifications',               [SchoolSettingsController::class, 'saveNotifications'])->name('settings.notifications');
+
             // Integrations / Gateway Settings
             Route::get('settings/integrations',                 [IntegrationController::class, 'index'])->name('settings.integrations');
             Route::post('settings/integrations/smtp',           [IntegrationController::class, 'saveSmtp'])->name('settings.integrations.smtp');
@@ -270,12 +300,56 @@ Route::middleware('auth')->group(function () {
             Route::post('settings/integrations/sms',            [IntegrationController::class, 'saveSms'])->name('settings.integrations.sms');
             Route::post('settings/integrations/sms/test',       [IntegrationController::class, 'testSms'])->name('settings.integrations.sms.test');
 
+            // School User / Admin Management
+            Route::get('settings/admins',                       [SchoolUserController::class, 'index'])->name('settings.admins');
+            Route::post('settings/admins',                      [SchoolUserController::class, 'store'])->name('settings.admins.store');
+            Route::put('settings/admins/{user}',                [SchoolUserController::class, 'update'])->name('settings.admins.update');
+            Route::delete('settings/admins/{user}',             [SchoolUserController::class, 'destroy'])->name('settings.admins.destroy');
+            Route::patch('settings/admins/{user}/suspend',      [SchoolUserController::class, 'suspend'])->name('settings.admins.suspend');
+            Route::patch('settings/admins/{user}/activate',     [SchoolUserController::class, 'activate'])->name('settings.admins.activate');
+
+            // Admission Inquiries
+            Route::get('admissions/inquiries',                          [AdmissionInquiryController::class, 'index'])->name('admissions.inquiries');
+            Route::post('admissions/inquiries',                         [AdmissionInquiryController::class, 'store'])->name('admissions.inquiries.store');
+            Route::put('admissions/inquiries/{admissionInquiry}',       [AdmissionInquiryController::class, 'update'])->name('admissions.inquiries.update');
+            Route::delete('admissions/inquiries/{admissionInquiry}',    [AdmissionInquiryController::class, 'destroy'])->name('admissions.inquiries.destroy');
+            Route::post('admissions/inquiries/{admissionInquiry}/followup', [AdmissionInquiryController::class, 'addFollowup'])->name('admissions.inquiries.followup');
+
+            // Visitor Logs
+            Route::get('admissions/visitors',                [VisitorLogController::class, 'index'])->name('admissions.visitors');
+            Route::post('admissions/visitors',               [VisitorLogController::class, 'store'])->name('admissions.visitors.store');
+            Route::patch('admissions/visitors/{visitorLog}/checkout', [VisitorLogController::class, 'checkout'])->name('admissions.visitors.checkout');
+            Route::delete('admissions/visitors/{visitorLog}', [VisitorLogController::class, 'destroy'])->name('admissions.visitors.destroy');
+
             Route::resource('departments',  DepartmentController::class)->except(['create', 'edit', 'show']);
             Route::resource('designations', DesignationController::class)->except(['create', 'edit', 'show']);
             Route::resource('staff',        StaffController::class);
             Route::post('staff/{staff}/documents',         [StaffController::class, 'uploadDocument'])->name('staff.documents.upload');
             Route::delete('staff/documents/{document}',    [StaffController::class, 'deleteDocument'])->name('staff.documents.delete');
         });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Student & Parent portal routes
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware('role:student')->prefix('school/student')->name('student.')->group(function () {
+        Route::get('dashboard',     [StudentPortalController::class, 'dashboard'])->name('dashboard');
+        Route::get('timetable',     [StudentPortalController::class, 'timetable'])->name('timetable');
+        Route::get('attendance',    [StudentPortalController::class, 'attendance'])->name('attendance');
+        Route::get('results',       [StudentPortalController::class, 'results'])->name('results');
+        Route::get('homework',      [StudentPortalController::class, 'homework'])->name('homework');
+        Route::get('fees',          [StudentPortalController::class, 'fees'])->name('fees');
+        Route::get('announcements', [StudentPortalController::class, 'announcements'])->name('announcements');
+    });
+
+    Route::middleware('role:parent')->prefix('school/parent')->name('parent.')->group(function () {
+        Route::get('dashboard',     [ParentPortalController::class, 'dashboard'])->name('dashboard');
+        Route::get('attendance',    [ParentPortalController::class, 'attendance'])->name('attendance');
+        Route::get('results',       [ParentPortalController::class, 'results'])->name('results');
+        Route::get('fees',          [ParentPortalController::class, 'fees'])->name('fees');
+        Route::get('announcements', [ParentPortalController::class, 'announcements'])->name('announcements');
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -289,5 +363,56 @@ Route::middleware('auth')->group(function () {
             Route::resource('schools', SchoolController::class);
             Route::patch('schools/{school}/suspend', [SchoolController::class, 'suspend'])->name('schools.suspend');
             Route::patch('schools/{school}/activate', [SchoolController::class, 'activate'])->name('schools.activate');
+
+            // User Management
+            // Packages
+            // Dashboard
+            Route::get('dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
+
+            // Platform Settings
+            Route::get('settings',                          [SuperAdminSettingsController::class, 'index'])->name('settings.index');
+            Route::post('settings/general',                 [SuperAdminSettingsController::class, 'saveGeneral'])->name('settings.general');
+            Route::post('settings/payment',                 [SuperAdminSettingsController::class, 'savePayment'])->name('settings.payment');
+            Route::post('settings/smtp',                    [SuperAdminSettingsController::class, 'saveSmtp'])->name('settings.smtp');
+            Route::post('settings/localization',            [SuperAdminSettingsController::class, 'saveLocalization'])->name('settings.localization');
+            Route::post('settings/maintenance',             [SuperAdminSettingsController::class, 'saveMaintenance'])->name('settings.maintenance');
+            Route::post('settings/storage',                 [SuperAdminSettingsController::class, 'saveStorage'])->name('settings.storage');
+            Route::post('settings/templates',               [SuperAdminSettingsController::class, 'saveTemplate'])->name('settings.templates');
+            Route::post('settings/audit',                   [SuperAdminSettingsController::class, 'saveAudit'])->name('settings.audit');
+
+            Route::get('packages',              [PackageController::class, 'index'])->name('packages.index');
+            Route::post('packages',             [PackageController::class, 'store'])->name('packages.store');
+            Route::put('packages/{package}',    [PackageController::class, 'update'])->name('packages.update');
+            Route::delete('packages/{package}', [PackageController::class, 'destroy'])->name('packages.destroy');
+
+            // Subscriptions
+            Route::get('subscriptions',                        [SubscriptionController::class, 'index'])->name('subscriptions.index');
+            Route::post('subscriptions',                       [SubscriptionController::class, 'store'])->name('subscriptions.store');
+            Route::put('subscriptions/{subscription}',         [SubscriptionController::class, 'update'])->name('subscriptions.update');
+            Route::delete('subscriptions/{subscription}',      [SubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
+
+            // Coupons
+            Route::get('coupons',              [CouponController::class, 'index'])->name('coupons.index');
+            Route::post('coupons',             [CouponController::class, 'store'])->name('coupons.store');
+            Route::put('coupons/{coupon}',     [CouponController::class, 'update'])->name('coupons.update');
+            Route::delete('coupons/{coupon}',  [CouponController::class, 'destroy'])->name('coupons.destroy');
+
+            // Module Manager
+            Route::get('module-manager',        [ModuleManagerController::class, 'index'])->name('module-manager.index');
+            Route::post('module-manager/toggle', [ModuleManagerController::class, 'toggle'])->name('module-manager.toggle');
+            Route::post('module-manager/bulk',   [ModuleManagerController::class, 'bulkSave'])->name('module-manager.bulk');
+
+            // User Management
+            Route::get('users',                          [UserManagementController::class, 'index'])->name('users.index');
+            Route::post('users',                         [UserManagementController::class, 'store'])->name('users.store');
+            Route::put('users/{user}',                   [UserManagementController::class, 'update'])->name('users.update');
+            Route::delete('users/{user}',                [UserManagementController::class, 'destroy'])->name('users.destroy');
+            Route::patch('users/{user}/suspend',         [UserManagementController::class, 'suspend'])->name('users.suspend');
+            Route::patch('users/{user}/activate',        [UserManagementController::class, 'activate'])->name('users.activate');
+            Route::patch('users/{user}/reset-password',  [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
         });
 });
+
+// Public admission form (no auth)
+Route::get('/apply/{school}',  [PublicAdmissionController::class, 'show'])->name('public.admission.show');
+Route::post('/apply/{school}', [PublicAdmissionController::class, 'submit'])->name('public.admission.submit');

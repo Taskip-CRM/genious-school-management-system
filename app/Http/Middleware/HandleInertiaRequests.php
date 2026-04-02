@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\PlatformSetting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -51,6 +52,10 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => session('success'),
                 'error'   => fn () => session('error'),
             ],
+            'faviconUrl' => fn () => once(function () {
+                $path = PlatformSetting::get('platform_favicon');
+                return $path ? asset('storage/' . $path) : null;
+            }),
         ];
     }
 }

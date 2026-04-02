@@ -89,7 +89,7 @@ Track the current sprint and completed modules here. Update after each sprint.
 | 01 | Schools CRUD — Super Admin Schools Management | ✅ Done (Sprint 2B) | Sprint 2B |
 | 02 | School Setup & Configuration | ✅ Done (Sprint 3) | Sprint 3 |
 | 03 | Student Management | ✅ Done (Sprint 4) | Sprint 4 |
-| 16 | Admission Inquiry & Visitor Management | Pending | Sprint 4B |
+| 16 | Admission Inquiry & Visitor Management | ✅ Done (Sprint 4B) | Sprint 4B |
 | 04 | Staff & HR Management (Basic) | ✅ Done (Sprint 5) | Sprint 5 |
 | 05 | Attendance Management | ✅ Done (Sprint 6) | Sprint 6 |
 | 06 | Timetable & Scheduling | ✅ Done (Sprint 7) | Sprint 7 |
@@ -103,9 +103,9 @@ Track the current sprint and completed modules here. Update after each sprint.
 | 11 | Homework & Lesson Planning | ✅ Done (Sprint 14) | Sprint 14 |
 | 12 | Communication | ✅ Done (Sprint 15) | Sprint 15 |
 | 13 | Reports & Analytics | ✅ Done (Sprint 16) | Sprint 16 |
-| 14 | System Administration | Pending | Sprint 17 |
-| 15 | Mobile PWA & API | Pending | Sprint 17 |
-| 19 | Subscription & Package Management | Pending | Sprint 17B |
+| 14 | System Administration | ✅ Done (Sprint 17) | Sprint 17 |
+| 15 | Mobile PWA & API | Removed | — |
+| 19 | Subscription & Package Management | ✅ Done (Sprint 17B) | Sprint 17B |
 
 > Update status to: `In Progress` → `Done` as each sprint completes.
 

@@ -3,6 +3,7 @@ import { usePage } from '@inertiajs/react';
 import { toast } from 'sonner';
 import Sidebar from '@/components/layout/Sidebar';
 import Topbar from '@/components/layout/Topbar';
+import PageProgress from '@/components/layout/PageProgress';
 import { useAuthStore } from '@/Stores/useAuthStore';
 import { useUIStore } from '@/Stores/useUIStore';
 import { cn } from '@/lib/utils';
@@ -15,9 +16,18 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, title, breadcrumbs }: AppLayoutProps) {
-    const { flash } = usePage<PageProps>().props;
+    const { flash, faviconUrl } = usePage<PageProps>().props;
     const theme = useAuthStore((s) => s.theme);
     const { sidebarOpen } = useUIStore();
+
+    // Favicon sync
+    useEffect(() => {
+        const link = document.getElementById('app-favicon') as HTMLLinkElement | null
+            ?? document.querySelector("link[rel~='icon']") as HTMLLinkElement | null;
+        if (link) {
+            link.href = faviconUrl ?? '/favicon.ico';
+        }
+    }, [faviconUrl]);
 
     // Dark mode sync
     useEffect(() => {
@@ -39,6 +49,7 @@ export default function AppLayout({ children, title, breadcrumbs }: AppLayoutPro
 
     return (
         <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+            <PageProgress />
             {/* Sidebar */}
             <div className={cn('hidden md:flex', !sidebarOpen && 'md:hidden')}>
                 <Sidebar />

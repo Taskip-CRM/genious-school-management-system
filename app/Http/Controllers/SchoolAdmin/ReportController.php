@@ -52,13 +52,13 @@ class ReportController extends Controller
             : 0;
 
         $monthFees = FeePayment::where('school_id', $sid)
-            ->whereMonth('paid_at', now()->month)
-            ->whereYear('paid_at', now()->year)
+            ->whereMonth('payment_date', now()->month)
+            ->whereYear('payment_date', now()->year)
             ->sum('amount_paid');
 
         $pendingFees = FeePayment::where('school_id', $sid)
             ->where('status', 'pending')
-            ->sum(DB::raw('total_amount - amount_paid'));
+            ->sum(DB::raw('amount_due - amount_paid'));
 
         // Monthly fee collection for last 6 months
         $feeChart = [];
@@ -67,8 +67,8 @@ class ReportController extends Controller
             $feeChart[] = [
                 'month'  => $month->format('M'),
                 'amount' => (float) FeePayment::where('school_id', $sid)
-                    ->whereMonth('paid_at', $month->month)
-                    ->whereYear('paid_at', $month->year)
+                    ->whereMonth('payment_date', $month->month)
+                    ->whereYear('payment_date', $month->year)
                     ->sum('amount_paid'),
             ];
         }
@@ -109,16 +109,16 @@ class ReportController extends Controller
 
     private function accountantDashboard(int $sid): array
     {
-        $todayCollection = FeePayment::where('school_id', $sid)->whereDate('paid_at', today())->sum('amount_paid');
-        $outstanding     = FeePayment::where('school_id', $sid)->where('status', 'pending')->sum(DB::raw('total_amount - amount_paid'));
-        $monthFees       = FeePayment::where('school_id', $sid)->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum('amount_paid');
+        $todayCollection = FeePayment::where('school_id', $sid)->whereDate('payment_date', today())->sum('amount_paid');
+        $outstanding     = FeePayment::where('school_id', $sid)->where('status', 'pending')->sum(DB::raw('amount_due - amount_paid'));
+        $monthFees       = FeePayment::where('school_id', $sid)->whereMonth('payment_date', now()->month)->whereYear('payment_date', now()->year)->sum('amount_paid');
 
         $feeChart = [];
         for ($i = 5; $i >= 0; $i--) {
             $month = now()->subMonths($i);
             $feeChart[] = [
                 'month'  => $month->format('M'),
-                'amount' => (float) FeePayment::where('school_id', $sid)->whereMonth('paid_at', $month->month)->whereYear('paid_at', $month->year)->sum('amount_paid'),
+                'amount' => (float) FeePayment::where('school_id', $sid)->whereMonth('payment_date', $month->month)->whereYear('payment_date', $month->year)->sum('amount_paid'),
             ];
         }
 
@@ -140,19 +140,52 @@ class ReportController extends Controller
     {
         $sid = $this->getSchoolId();
 
-        $query = Attendance::with('student:id,first_name,last_name,admission_no', 'schoolClass:id,name')
+        $query = Attendance::with(['attendable.schoolClass:id,name'])
             ->where('school_id', $sid)
-            ->when($request->class_id,  fn ($q) => $q->where('class_id', $request->class_id))
             ->when($request->from_date, fn ($q) => $q->whereDate('date', '>=', $request->from_date))
             ->when($request->to_date,   fn ($q) => $q->whereDate('date', '<=', $request->to_date))
-            ->when($request->status,    fn ($q) => $q->where('status', $request->status));
+            ->when($request->status,    fn ($q) => $q->where('status', $request->status))
+            ->when($request->class_id, fn ($q) => $q->whereHasMorph(
+                'attendable', [\App\Models\Student::class],
+                fn ($sq) => $sq->where('class_id', $request->class_id)
+            ));
 
-        $records = $query->latest('date')->paginate(50)->withQueryString();
+        $records = $query->latest('date')->paginate(50)->withQueryString()
+            ->through(function ($a) {
+                $attendable = $a->attendable;
+                $name = '—';
+                $admissionNo = null;
+                $className   = null;
+
+                if ($attendable) {
+                    if (isset($attendable->first_name)) {
+                        $name = trim($attendable->first_name . ' ' . ($attendable->last_name ?? ''));
+                        $admissionNo = $attendable->admission_no ?? null;
+                        $className   = $attendable->schoolClass?->name;
+                    } else {
+                        $name = $attendable->name ?? '—';
+                    }
+                }
+
+                return [
+                    'id'             => $a->id,
+                    'date'           => $a->date,
+                    'status'         => $a->status,
+                    'remarks'        => $a->remarks,
+                    'attendable_type'=> class_basename($a->attendable_type ?? ''),
+                    'name'           => $name,
+                    'admission_no'   => $admissionNo,
+                    'class'          => $className,
+                ];
+            });
 
         $summary = Attendance::where('school_id', $sid)
-            ->when($request->class_id,  fn ($q) => $q->where('class_id', $request->class_id))
             ->when($request->from_date, fn ($q) => $q->whereDate('date', '>=', $request->from_date))
             ->when($request->to_date,   fn ($q) => $q->whereDate('date', '<=', $request->to_date))
+            ->when($request->class_id, fn ($q) => $q->whereHasMorph(
+                'attendable', [\App\Models\Student::class],
+                fn ($sq) => $sq->where('class_id', $request->class_id)
+            ))
             ->selectRaw('status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
@@ -228,21 +261,21 @@ class ReportController extends Controller
         $to   = $request->to_date   ?? now()->toDateString();
 
         $collected = FeePayment::where('school_id', $sid)
-            ->whereBetween('paid_at', [$from, $to])
+            ->whereBetween('payment_date', [$from, $to])
             ->sum('amount_paid');
 
         $outstanding = FeePayment::where('school_id', $sid)
             ->where('status', 'pending')
-            ->sum(DB::raw('total_amount - amount_paid'));
+            ->sum(DB::raw('amount_due - amount_paid'));
 
         $payroll = Payroll::where('school_id', $sid)
-            ->whereMonth('pay_date', now()->month)
+            ->where('month_year', now()->format('Y-m'))
             ->sum('net_salary');
 
         // Daily collection chart
         $dailyChart = FeePayment::where('school_id', $sid)
-            ->whereBetween('paid_at', [$from, $to])
-            ->selectRaw('DATE(paid_at) as day, SUM(amount_paid) as amount')
+            ->whereBetween('payment_date', [$from, $to])
+            ->selectRaw('DATE(payment_date) as day, SUM(amount_paid) as amount')
             ->groupBy('day')
             ->orderBy('day')
             ->get();
@@ -250,8 +283,8 @@ class ReportController extends Controller
         // Recent payments
         $payments = FeePayment::with('student:id,first_name,last_name,admission_no')
             ->where('school_id', $sid)
-            ->whereBetween('paid_at', [$from, $to])
-            ->latest('paid_at')
+            ->whereBetween('payment_date', [$from, $to])
+            ->latest('payment_date')
             ->paginate(30)
             ->withQueryString();
 
@@ -313,11 +346,11 @@ class ReportController extends Controller
                 ->limit(500)->get(),
 
             'fees'       => FeePayment::where('school_id', $sid)
-                ->when($f['from_date'] ?? null, fn ($q) => $q->whereDate('paid_at', '>=', $f['from_date']))
-                ->when($f['to_date'] ?? null,   fn ($q) => $q->whereDate('paid_at', '<=', $f['to_date']))
+                ->when($f['from_date'] ?? null, fn ($q) => $q->whereDate('payment_date', '>=', $f['from_date']))
+                ->when($f['to_date'] ?? null,   fn ($q) => $q->whereDate('payment_date', '<=', $f['to_date']))
                 ->when($f['status'] ?? null,    fn ($q) => $q->where('status', $f['status']))
                 ->with('student:id,first_name,last_name,admission_no')
-                ->latest('paid_at')->limit(500)->get(),
+                ->latest('payment_date')->limit(500)->get(),
 
             'staff'      => Staff::where('school_id', $sid)
                 ->when($f['status'] ?? null, fn ($q) => $q->where('status', $f['status']))
@@ -377,8 +410,8 @@ class ReportController extends Controller
         $to       = $request->to_date   ?? now()->toDateString();
         $payments = FeePayment::with('student:id,first_name,last_name,admission_no')
             ->where('school_id', $sid)
-            ->whereBetween('paid_at', [$from, $to])
-            ->latest('paid_at')->get();
+            ->whereBetween('payment_date', [$from, $to])
+            ->latest('payment_date')->get();
 
         $pdf = Pdf::loadView('reports.finance', compact('payments', 'from', 'to'))->setPaper('a4', 'landscape');
         return $pdf->download('finance-report.pdf');

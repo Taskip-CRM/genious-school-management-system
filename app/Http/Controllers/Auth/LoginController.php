@@ -94,7 +94,7 @@ class LoginController extends Controller
             ->withProperties(['ip' => $request->ip(), 'user_agent' => $request->userAgent()])
             ->log('User logged in');
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->route('dashboard');
     }
 
     public function destroy(Request $request): RedirectResponse

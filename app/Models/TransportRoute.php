@@ -32,7 +32,9 @@ class TransportRoute extends Model
 
     public function students(): BelongsToMany
     {
-        return $this->belongsToMany(Student::class, 'student_route')
+        // Explicit FK because model name 'TransportRoute' would auto-generate 'transport_route_id'
+        // but the actual pivot column is 'route_id'
+        return $this->belongsToMany(Student::class, 'student_route', 'route_id', 'student_id')
             ->withPivot('stop', 'fee_linked')
             ->withTimestamps();
     }

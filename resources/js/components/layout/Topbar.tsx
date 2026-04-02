@@ -1,9 +1,9 @@
 import { router, usePage } from '@inertiajs/react';
-import { Moon, Sun, LogOut, User, Menu } from 'lucide-react';
+import { Moon, Sun, LogOut, User, Menu, KeyRound } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+    DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
     DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
@@ -105,23 +105,30 @@ export default function Topbar({ title, breadcrumbs }: TopbarProps) {
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuLabel className="font-normal">
-                            <p className="text-sm font-medium">{user?.name}</p>
-                            <p className="text-xs text-slate-500 truncate">{user?.email}</p>
-                        </DropdownMenuLabel>
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel className="font-normal">
+                                <p className="text-sm font-medium">{user?.name}</p>
+                                <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                            </DropdownMenuLabel>
+                        </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <a href="/profile" className="cursor-pointer">
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem onClick={() => { window.location.href = '/profile'; }}>
                                 <User className="w-4 h-4 mr-2" /> Profile
-                            </a>
-                        </DropdownMenuItem>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { window.location.href = '/password/change'; }}>
+                                <KeyRound className="w-4 h-4 mr-2" /> Change Password
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                            className="text-red-600 dark:text-red-400 cursor-pointer"
-                            onClick={() => router.post('/logout')}
-                        >
-                            <LogOut className="w-4 h-4 mr-2" /> Logout
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem
+                                className="text-red-600 dark:text-red-400 cursor-pointer"
+                                onClick={() => router.post('/logout')}
+                            >
+                                <LogOut className="w-4 h-4 mr-2" /> Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

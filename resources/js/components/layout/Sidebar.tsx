@@ -6,6 +6,7 @@ import {
     Settings, ChevronLeft, ChevronRight, Layers, Clock, CalendarOff,
     Building2, BadgeCheck, NotebookPen, Video, Megaphone, Mail, Send, Bell,
     PieChart, FileText, TrendingUp, Wrench, ShieldCheck, Plug,
+    CreditCard, Tag,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/Stores/useUIStore';
@@ -29,8 +30,11 @@ const navGroups: NavGroup[] = [
     {
         title: 'System',
         items: [
-            { label: 'Dashboard',   href: '/dashboard',             icon: LayoutDashboard, exact: true },
-            { label: 'Schools',     href: '/super-admin/schools',   icon: School,          roles: ['super-admin'] },
+            { label: 'Dashboard',   href: '/school/reports/dashboard',  icon: LayoutDashboard, roles: ['school-admin','principal','teacher','accountant','librarian'] },
+            { label: 'Dashboard',   href: '/super-admin/dashboard',     icon: LayoutDashboard, roles: ['super-admin'], exact: true },
+            { label: 'My Dashboard',href: '/school/student/dashboard',  icon: LayoutDashboard, roles: ['student'] },
+            { label: 'My Dashboard',href: '/school/parent/dashboard',   icon: LayoutDashboard, roles: ['parent'] },
+            { label: 'Schools',     href: '/super-admin/schools',       icon: School,          roles: ['super-admin'] },
         ],
     },
     {
@@ -80,6 +84,43 @@ const navGroups: NavGroup[] = [
         ],
     },
     {
+        title: 'My Academic',
+        items: [
+            { label: 'My Timetable',  href: '/school/student/timetable',  icon: CalendarDays,   roles: ['student'] },
+            { label: 'My Attendance', href: '/school/student/attendance',  icon: ClipboardList,  roles: ['student'] },
+            { label: 'My Results',    href: '/school/student/results',     icon: BarChart3,      roles: ['student'] },
+            { label: 'My Homework',   href: '/school/student/homework',    icon: NotebookPen,    roles: ['student'] },
+        ],
+    },
+    {
+        title: 'My Finance',
+        items: [
+            { label: 'My Fees',       href: '/school/student/fees',        icon: DollarSign,    roles: ['student'] },
+        ],
+    },
+    {
+        title: 'My Children',
+        items: [
+            { label: 'Attendance',    href: '/school/parent/attendance',   icon: ClipboardList, roles: ['parent'] },
+            { label: 'Results',       href: '/school/parent/results',      icon: BarChart3,     roles: ['parent'] },
+            { label: 'Fee Status',    href: '/school/parent/fees',         icon: DollarSign,    roles: ['parent'] },
+        ],
+    },
+    {
+        title: 'School Info',
+        items: [
+            { label: 'Announcements', href: '/school/student/announcements', icon: Megaphone,   roles: ['student'] },
+            { label: 'Announcements', href: '/school/parent/announcements',  icon: Megaphone,   roles: ['parent'] },
+        ],
+    },
+    {
+        title: 'Admissions',
+        items: [
+            { label: 'Inquiries', href: '/school/admissions/inquiries', icon: ClipboardList, roles: ['super-admin','school-admin','principal','receptionist'] },
+            { label: 'Visitors',  href: '/school/admissions/visitors',  icon: Users,         roles: ['super-admin','school-admin','principal','receptionist'] },
+        ],
+    },
+    {
         title: 'Facilities',
         items: [
             { label: 'Library',     href: '/school/library/books',       icon: Library,  roles: ['super-admin','school-admin','principal','librarian'] },
@@ -110,11 +151,22 @@ const navGroups: NavGroup[] = [
         ],
     },
     {
+        title: 'Subscription',
+        items: [
+            { label: 'Packages',       href: '/super-admin/packages',       icon: Package,     roles: ['super-admin'] },
+            { label: 'Subscriptions',  href: '/super-admin/subscriptions',  icon: CreditCard,  roles: ['super-admin'] },
+            { label: 'Coupons',        href: '/super-admin/coupons',        icon: Tag,         roles: ['super-admin'] },
+            { label: 'Module Manager', href: '/super-admin/module-manager', icon: Layers,      roles: ['super-admin'] },
+        ],
+    },
+    {
         title: 'Admin',
         items: [
-            { label: 'Integrations', href: '/school/settings/integrations', icon: Plug,     roles: ['super-admin','school-admin'] },
-            { label: 'Settings',     href: '/settings',                     icon: Settings, roles: ['school-admin','super-admin'] },
-            { label: 'Users',        href: '/super-admin/users',            icon: Users,    roles: ['super-admin'] },
+            { label: 'Settings',      href: '/school/settings',              icon: Settings, roles: ['school-admin'] },
+            { label: 'Settings',      href: '/super-admin/settings',         icon: Settings, roles: ['super-admin'] },
+            { label: 'Integrations',  href: '/school/settings/integrations', icon: Plug,     roles: ['super-admin','school-admin'] },
+            { label: 'Manage Users',  href: '/school/settings/admins',       icon: UserCog,  roles: ['school-admin'] },
+            { label: 'All Users',     href: '/super-admin/users',            icon: Users,    roles: ['super-admin'] },
         ],
     },
 ];

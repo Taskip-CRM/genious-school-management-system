@@ -68,7 +68,7 @@ export default function AcademicReport({ exams, classPerformance, subjectPerform
                                         <XAxis dataKey="class_name" tick={{ fontSize: 11 }} />
                                         <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
                                         <Tooltip formatter={(v: number) => [`${v}%`, 'Pass Rate']} />
-                                        <Bar dataKey="pass_rate" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                                        <Bar dataKey="pass_rate" fill="#22c55e" radius={[4, 4, 0, 0]} isAnimationActive={false} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </CardContent>
@@ -84,7 +84,7 @@ export default function AcademicReport({ exams, classPerformance, subjectPerform
                                         <XAxis dataKey="subject" tick={{ fontSize: 11 }} />
                                         <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
                                         <Tooltip formatter={(v: number) => [`${v}%`, 'Avg %']} />
-                                        <Bar dataKey="avg_percent" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                                        <Bar dataKey="avg_percent" fill="#6366f1" radius={[4, 4, 0, 0]} isAnimationActive={false} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </CardContent>

@@ -39,17 +39,17 @@
             <td>{{ $i + 1 }}</td>
             <td>{{ $p->student?->first_name }} {{ $p->student?->last_name }}</td>
             <td>{{ $p->student?->admission_no }}</td>
-            <td>{{ number_format($p->total_amount, 2) }}</td>
+            <td>{{ number_format($p->amount_due, 2) }}</td>
             <td>{{ number_format($p->amount_paid, 2) }}</td>
-            <td>{{ number_format($p->total_amount - $p->amount_paid, 2) }}</td>
+            <td>{{ number_format($p->amount_due - $p->amount_paid, 2) }}</td>
             <td class="{{ $p->status }}">{{ ucfirst($p->status) }}</td>
-            <td>{{ $p->paid_at ? \Carbon\Carbon::parse($p->paid_at)->format('d M Y') : '—' }}</td>
+            <td>{{ $p->payment_date ? \Carbon\Carbon::parse($p->payment_date)->format('d M Y') : '—' }}</td>
         </tr>
         @endforeach
         <tr class="total-row">
             <td colspan="4">Total</td>
             <td>{{ number_format($payments->sum('amount_paid'), 2) }}</td>
-            <td>{{ number_format($payments->sum(fn($p) => $p->total_amount - $p->amount_paid), 2) }}</td>
+            <td>{{ number_format($payments->sum(fn($p) => $p->amount_due - $p->amount_paid), 2) }}</td>
             <td colspan="2"></td>
         </tr>
     </tbody>

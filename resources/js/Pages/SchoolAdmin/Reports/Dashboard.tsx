@@ -89,7 +89,7 @@ export default function Dashboard({ role, totalStudents, totalStaff, attendanceP
                                         <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                                         <YAxis tick={{ fontSize: 11 }} />
                                         <Tooltip formatter={(v: number) => [`$${fmt(v)}`, 'Collected']} />
-                                        <Bar dataKey="amount" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                                        <Bar dataKey="amount" fill="#6366f1" radius={[4, 4, 0, 0]} isAnimationActive={false} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </CardContent>
@@ -108,8 +108,8 @@ export default function Dashboard({ role, totalStudents, totalStaff, attendanceP
                                         <YAxis tick={{ fontSize: 11 }} />
                                         <Tooltip />
                                         <Legend />
-                                        <Line type="monotone" dataKey="present" stroke="#22c55e" strokeWidth={2} dot={{ r: 4 }} />
-                                        <Line type="monotone" dataKey="absent"  stroke="#ef4444" strokeWidth={2} dot={{ r: 4 }} />
+                                        <Line type="monotone" dataKey="present" stroke="#22c55e" strokeWidth={2} dot={{ r: 4 }} isAnimationActive={false} />
+                                        <Line type="monotone" dataKey="absent"  stroke="#ef4444" strokeWidth={2} dot={{ r: 4 }} isAnimationActive={false} />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </CardContent>
