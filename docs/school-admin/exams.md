@@ -13,7 +13,7 @@ Go to **Academic → Examinations** to create exams, enter marks, and manage stu
 1. Go to **Academic → Examinations**.
 2. Click **Add Exam**.
 3. Fill in:
-   - **Exam Name** (e.g. Mid-Term Exam 2025)
+   - **Exam Name** (e.g. Mid-Term Exam 2026)
    - **Type** — Midterm, Final, Quiz, or Assignment
    - **Class** this exam applies to
    - **Start Date** and **End Date**

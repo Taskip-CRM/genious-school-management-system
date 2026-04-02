@@ -38,7 +38,7 @@ The staff member's leave status updates immediately.
 ### Processing Monthly Payroll
 
 1. Go to **HR Setup → Payroll**.
-2. Select the **Month** (e.g. April 2025).
+2. Select the **Month** (e.g. April 2026).
 3. Click **Generate Payroll** — the system creates payroll entries for all active staff based on their basic salary.
 4. Review each entry:
    - **Basic Salary** — from the staff profile

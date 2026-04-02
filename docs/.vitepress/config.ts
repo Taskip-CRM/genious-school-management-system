@@ -111,7 +111,7 @@ export default defineConfig({
 
     footer: {
       message: 'Genius School Management System',
-      copyright: 'Copyright © 2025 xgenious',
+      copyright: 'Copyright © 2026 xgenious',
     },
 
     socialLinks: [
